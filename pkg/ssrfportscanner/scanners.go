@@ -13,6 +13,7 @@ import (
 func VWebhookScan(options *pflag.FlagSet) {
 	createNamespace(options)
 	createValidatingWebhook(options)
+	createPod(options)
 }
 
 //Connect to a Kubernetes cluster and create a namespace
@@ -56,7 +57,8 @@ func createValidatingWebhook(options *pflag.FlagSet) {
 	sideEffect := admissionregistrationv1.SideEffectClassNone
 	scope := admissionregistrationv1.NamespacedScope
 	target, _ := options.GetString("target")
-	url := "https://" + target
+	port, _ := options.GetString("port")
+	url := "https://" + target + ":" + port
 	webhookConfig := &admissionregistrationv1.ValidatingWebhookConfiguration{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "ssrf-portscanner-webhook",
@@ -93,5 +95,37 @@ func createValidatingWebhook(options *pflag.FlagSet) {
 	_, err = clientset.AdmissionregistrationV1().ValidatingWebhookConfigurations().Create(context.TODO(), webhookConfig, metav1.CreateOptions{})
 	if err != nil {
 		log.Print("createValidatingWebhook: failed creating validating webhook with", err)
+	}
+}
+
+// Create a new pod in the program namespace
+func createPod(options *pflag.FlagSet) {
+	clientset, err := initKubeClient()
+	if err != nil {
+		log.Printf("createPod: failed creating Clientset with", err)
+		return
+	}
+
+	name, _ := options.GetString("namespace")
+	pod := &v1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "ssrf-portscanner",
+			Labels: map[string]string{
+				"ssrf-portscanner": "true",
+			},
+		},
+		Spec: v1.PodSpec{
+			Containers: []v1.Container{
+				{
+					Name:  "ssrf-portscanner",
+					Image: "busybox",
+				},
+			},
+		},
+	}
+	_, err = clientset.CoreV1().Pods(name).Create(context.Background(), pod, metav1.CreateOptions{})
+	if err != nil {
+		log.Printf("createPod: failed creating pod with", err)
+		return
 	}
 }
