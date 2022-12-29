@@ -27,6 +27,9 @@ func createNamespace(options *pflag.FlagSet) {
 	namespace := &v1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: name,
+			Labels: map[string]string{
+				"ssrf-portscanner": "true",
+			},
 		},
 	}
 
@@ -61,6 +64,11 @@ func createValidatingWebhook(options *pflag.FlagSet) {
 		Webhooks: []admissionregistrationv1.ValidatingWebhook{
 			{
 				Name: "ssrf-portscanner-webhook.example.com",
+				NamespaceSelector: &metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"ssrf-portscanner": "true",
+					},
+				},
 				Rules: []admissionregistrationv1.RuleWithOperations{
 					{
 						Operations: []admissionregistrationv1.OperationType{
@@ -75,12 +83,7 @@ func createValidatingWebhook(options *pflag.FlagSet) {
 					},
 				},
 				ClientConfig: admissionregistrationv1.WebhookClientConfig{
-					//Service: &admissionregistrationv1.ServiceReference{
-					//	Name:      "example-service",
-					//	Namespace: "default",
-					//},
 					URL: &url,
-					//CABundle: []byte(caBundle), // base64-encoded CA bundle
 				},
 				SideEffects:             &sideEffect,
 				AdmissionReviewVersions: []string{"v1", "v1beta1"},
