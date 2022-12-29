@@ -42,6 +42,9 @@ func VWebhookScan(options *pflag.FlagSet) {
 		fmt.Println("Port is open but speaks HTTP not HTTPS")
 	case strings.Contains(result.Error(), "first record does not look like a TLS handshake"):
 		fmt.Println("Port is open but speaks a non-HTTP protocol")
+	default:
+		fmt.Println("Oooh case we don't know about, please file an issue with the error message below!")
+		fmt.Println(result.Error())
 	}
 	deleteWebhook(options)
 	deleteNamespace(options)
