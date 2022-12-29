@@ -51,6 +51,9 @@ func createValidatingWebhook(options *pflag.FlagSet) {
 
 	//target, _ := options.GetString("target")
 	sideEffect := admissionregistrationv1.SideEffectClassNone
+	scope := admissionregistrationv1.NamespacedScope
+	target, _ := options.GetString("target")
+	url := "https://" + target
 	webhookConfig := &admissionregistrationv1.ValidatingWebhookConfiguration{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "ssrf-portscanner-webhook",
@@ -67,14 +70,16 @@ func createValidatingWebhook(options *pflag.FlagSet) {
 							APIGroups:   []string{""},
 							APIVersions: []string{"v1"},
 							Resources:   []string{"pods"},
+							Scope:       &scope,
 						},
 					},
 				},
 				ClientConfig: admissionregistrationv1.WebhookClientConfig{
-					Service: &admissionregistrationv1.ServiceReference{
-						Name:      "example-service",
-						Namespace: "default",
-					},
+					//Service: &admissionregistrationv1.ServiceReference{
+					//	Name:      "example-service",
+					//	Namespace: "default",
+					//},
+					URL: &url,
 					//CABundle: []byte(caBundle), // base64-encoded CA bundle
 				},
 				SideEffects:             &sideEffect,
