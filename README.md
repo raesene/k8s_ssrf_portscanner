@@ -16,9 +16,9 @@ Then, when we try to create a pod in the namespace, the error message that is re
 
 The sequence of events is:
 
-1. Create a namespace called `ssrfscanner`
-2. Create a validating admission webhook that only looks at pods in the `ssrfscanner` namespace (to avoid disrupting the cluster). The target URL for the webhook is the target host/port that have been specified.
-3. **Try** to create a pod in the `ssrfscanner` namespace. We're expecting this to fail, as there's no webhook server listening on the target host/port.
+1. Create a namespace called `ssrfscanner` with a random suffix (to avoid collisions if it's run multiple times and the namespace from a previous run is still terminating)
+2. Create a validating admission webhook that only looks at pods in that namespace (to avoid disrupting the cluster). The target URL for the webhook is the target host/port that have been specified.
+3. **Try** to create a pod in the scanner namespace. We're expecting this to fail, as there's no webhook server listening on the target host/port.
 4. The API server calls the target host/port specified in the webhook configuration
 5. The target host/port returns an error, as there's no webhook server listening there (or it's not reachable from the API server and the network stack is returning an error)
 6. The API server returns the error to the user.
