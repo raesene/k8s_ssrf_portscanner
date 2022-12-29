@@ -53,16 +53,15 @@ func createValidatingWebhook(options *pflag.FlagSet) {
 	sideEffect := admissionregistrationv1.SideEffectClassNone
 	webhookConfig := &admissionregistrationv1.ValidatingWebhookConfiguration{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "example-webhook",
+			Name: "ssrf-portscanner-webhook",
 		},
 		Webhooks: []admissionregistrationv1.ValidatingWebhook{
 			{
-				Name: "example-webhook.example.com",
+				Name: "ssrf-portscanner-webhook.example.com",
 				Rules: []admissionregistrationv1.RuleWithOperations{
 					{
 						Operations: []admissionregistrationv1.OperationType{
 							admissionregistrationv1.Create,
-							admissionregistrationv1.Update,
 						},
 						Rule: admissionregistrationv1.Rule{
 							APIGroups:   []string{""},
