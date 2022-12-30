@@ -23,6 +23,21 @@ The sequence of events is:
   - Return this to the user after interpreting the error for what it indicates
 - Delete the webhook and the namespace
 
+## Sequence diagram
+
+```mermaid
+sequenceDiagram
+participant clusterAdmin
+participant kubernetesAPIServer
+participant targetHost
+clusterAdmin->>kubernetesAPIServer: Please create a namespace called ssrftester
+clusterAdmin->>kubernetesAPIServer: Please create a vadlidating admission webhook for the ssrftester namespace pointing at targetHost
+clusterAdmin->>kubernetesAPIServer: Please create a pod in the namespace ssrftester
+kubernetesAPIServer->>targetHost: Hey is this pod OK?
+targetHost->>kubernetesAPIServer: Error there's no webhook server here
+kubernetesAPIServer->>clusterAdmin: There was an error trying to do that, here's the details
+```
+
 ## Usage
 
 `k8s-ssrf-portscanner vwebhookscan` is the command to run the validating webhook scanner. This will (by default) target 127.0.0.1:443 (from the perspective of the API server). You can change the target with `-t` and the port with `-p`. Also if you want to generate a different namespace than the default (`ssrfscanner`) you can use `-n`.
