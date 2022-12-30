@@ -36,3 +36,5 @@ If you run multiple instances of the tool or run a new one immediately after the
 At the moment we scan individual ports on individual hosts. Obviously it would be better to scan a range of ports on a range of hosts, so we'd need to take the range and then iterate over the scanning process for each one. 
 
 Also reporting is just to STDOUT right now, it could be made more useful with JSON output.
+
+It would be good to add a faster timeout to the webhook, to speed up scanning. Realistically a couple of seconds should do in most cases.
