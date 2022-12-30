@@ -16,12 +16,12 @@ Then, when we try to create a pod in the namespace, the error message that is re
 
 The sequence of events is:
 
-- Check if the namespace exists, if not create it
-- Check if the webhook exists, if it does delete it, if not create it.
-- Create a pod in the namespace
-- Check the error message returned by the API server when it tries and fails to call the target admission webhook
-  - Return this to the user after interpreting the error for what it indicates
-- Delete the webhook and the namespace
+1. Create a namespace called `ssrfscanner`
+2. Create a validating admission webhook that only looks at pods in the `ssrfscanner` namespace (to avoid disrupting the cluster). The target URL for the webhook is the target host/port that have been specified.
+3. **Try** to create a pod in the `ssrfscanner` namespace. We're expecting this to fail, as there's no webhook server listening on the target host/port.
+4. The API server calls the target host/port specified in the webhook configuration
+5. The target host/port returns an error, as there's no webhook server listening there (or it's not reachable from the API server and the network stack is returning an error)
+6. The API server returns the error to the user.
 
 ## Sequence diagram
 
@@ -30,13 +30,24 @@ sequenceDiagram
 participant clusterAdmin
 participant kubernetesAPIServer
 participant targetHost
-clusterAdmin->>kubernetesAPIServer: Please create a namespace called ssrftester
-clusterAdmin->>kubernetesAPIServer: Please create a vadlidating admission webhook for the ssrftester namespace pointing at targetHost
-clusterAdmin->>kubernetesAPIServer: Please create a pod in the namespace ssrftester
-kubernetesAPIServer->>targetHost: Hey is this pod OK?
-targetHost->>kubernetesAPIServer: Error there's no webhook server here
-kubernetesAPIServer->>clusterAdmin: There was an error trying to do that, here's the details
+clusterAdmin->>kubernetesAPIServer: 1. Please create a namespace
+clusterAdmin->>kubernetesAPIServer: 2. Please create a vadlidating admission webhook pointing at targetHost
+clusterAdmin->>kubernetesAPIServer: 3. Please create a pod in the ssrfscanner namespace.
+kubernetesAPIServer->>targetHost: 4. Hey is this pod OK?
+targetHost->>kubernetesAPIServer: 5. Error there's no webhook server here
+kubernetesAPIServer->>clusterAdmin: 6. There was an error trying to do that, here's the details
 ```
+
+## How does the code do it?
+
+I'm trying to catch various cases of error, so we clean up after ourselves. The code does the following:
+
+- Check if the namespace exists, if not create it
+- Check if the webhook exists, if it does delete it, if not create it.
+- Create a pod in the namespace
+- Check the error message returned by the API server when it tries and fails to call the target admission webhook
+  - Return this to the user after interpreting the error for what it indicates
+- Delete the webhook and the namespace
 
 ## Usage
 
