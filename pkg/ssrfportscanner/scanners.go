@@ -47,6 +47,9 @@ func VWebhookScan(options *pflag.FlagSet) {
 	// This case comes from AKS specifically, perhaps a different golang version?
 	case strings.Contains(result.Error(), "EOF"):
 		fmt.Println("Port is not available/closed")
+	// Handle the going to fast case until we fix it
+	case strings.Contains(result.Error(), "it is being terminated"):
+		fmt.Println("Namespace being teriminated, slow downa and try again :)")
 	default:
 		fmt.Println("Oooh case we don't know about, please file an issue with the error message below!")
 		fmt.Println(result.Error())
