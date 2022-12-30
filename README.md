@@ -12,7 +12,16 @@ This is the initial idea I've implemented. Validating admission webhooks take a 
 
 Obviously, from a cluster availability perspective, we want to scope down the webhooks sphere of operations so it doesn't disrupt the cluster you're scanning, so what we do is create a namespace with a specific name and then have the webhook only look at create pod attempts in that namespace.
 
-Then, when we try to create a pod in the namespace, the error message that is returned gives us information about the service or URL that the webhook tried to call.
+Then, when we try to create a pod in the namespace, the error message that is returned gives us information about the service or URL that the API Server tried to call.
+
+The sequence of events is:
+
+- Check if the namespace exists, if not create it
+- Check if the webhook exists, if it does delete it, if not create it.
+- Create a pod in the namespace
+- Check the error message returned by the API server when it tries and fails to call the target admission webhook
+  - Return this to the user after interpreting the error for what it indicates
+- Delete the webhook and the namespace
 
 ## Usage
 
