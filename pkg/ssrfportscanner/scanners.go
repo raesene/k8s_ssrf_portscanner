@@ -32,6 +32,8 @@ func VWebhookScan(options *pflag.FlagSet) {
 		fmt.Println("Port is closed")
 	case strings.Contains(result.Error(), "certificate is valid for"):
 		fmt.Println("Port speaks HTTPS but needs different SNI")
+	case strings.Contains(result.Error(), "certificate signed by unknown authority"):
+		fmt.Println("Port speaks HTTPS but the API server does not trust the certificate")
 	case strings.Contains(result.Error(), "json parse error"):
 		fmt.Println("Port speaks HTTPS and has a valid certificate")
 	case strings.Contains(result.Error(), "no route to host"):
