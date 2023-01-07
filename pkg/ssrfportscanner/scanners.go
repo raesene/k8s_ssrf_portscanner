@@ -50,6 +50,12 @@ func VWebhookScan(options *pflag.FlagSet) {
 	// Handle the going to fast case until we fix it
 	case strings.Contains(result.Error(), "it is being terminated"):
 		fmt.Println("Namespace being teriminated, slow downa and try again :)")
+	case strings.Contains(result.Error(), "Unauthorized"):
+		fmt.Println("Target requires authorization")
+	case strings.Contains(result.Error(), "certificate relies on legacy Common Name field"):
+		fmt.Println("Target uses a certificate with a Common Name field")
+	case strings.Contains(result.Error(), "doesn't contain any IP SANs"):
+		fmt.Println("Target uses a certificate without an IP SAN but we tried to connect via IP")
 	default:
 		fmt.Println("Oooh case we don't know about, please file an issue with the error message below!")
 		fmt.Println(result.Error())
