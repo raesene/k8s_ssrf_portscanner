@@ -36,6 +36,7 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringP("target", "t", "127.0.0.1", "Target IP address")
+	rootCmd.PersistentFlags().StringP("range", "r", "", "Network range to scan")
 	rootCmd.PersistentFlags().StringP("port", "p", "443", "Target port")
 	rootCmd.PersistentFlags().StringP("namespace", "n", "ssrfscanner", "Namespace to use for namespaced scoped resources")
 }

@@ -53,9 +53,11 @@ I'm trying to catch various cases of error, so we clean up after ourselves. The 
 
 `k8s-ssrf-portscanner vwebhookscan` is the command to run the validating webhook scanner. This will (by default) target 127.0.0.1:443 (from the perspective of the API server). You can change the target with `-t` and the port with `-p`. Also if you want to generate a different namespace than the default (`ssrfscanner`) you can use `-n`.
 
+You can also scan a range of hosts on a specific port using the `-r` switch. This will scan the range of hosts on the port specified with `-p`. The range is specified in CIDR notation, so for example `-r 192.168.1.0/24`.
+
 ## TODO
 
-At the moment we scan individual ports on individual hosts. Obviously it would be better to scan a range of ports on a range of hosts, so we'd need to take the range and then iterate over the scanning process for each one. 
+At the moment we scan individual ports on individual hosts or a range of hosts on one port. Obviously it would be better to scan a range of ports on a range of hosts, so we'd need to take the range and then iterate over the scanning process for each one. 
 
 Also reporting is just to STDOUT right now, it could be made more useful with JSON output.
 
