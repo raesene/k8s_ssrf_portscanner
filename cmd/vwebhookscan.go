@@ -24,7 +24,8 @@ var vwebhookscanCmd = &cobra.Command{
 		options := cmd.Flags()
 		//If the network flag is set we need to scan the network
 		if options.Lookup("range").Value.String() != "" {
-			ip, ipnet, err := net.ParseCIDR("192.168.41.0/24")
+			ne := options.Lookup("range").Value.String()
+			ip, ipnet, err := net.ParseCIDR(ne)
 			if err != nil {
 				panic(err)
 			}
