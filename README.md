@@ -6,6 +6,10 @@ There are a couple of objects in the Kubernetes API which take a parameter of a 
 
 From a security perspective, to use this you need considerable rights to the Kubernetes API, so it's not likely to be a huge concern, although it does mean, in managed Kubernetes environments, you can port-scan the CSP network. Obviously, we'd expect their security architecture to be pretty good, so port scanning shouldn't reveal anything sensitive :)
 
+It looks a bit like this
+
+![portscanner](./images/portscanner.png)
+
 ## Validating Webhook
 
 This is the initial idea I've implemented. Validating admission webhooks take a service object or URL parameter as part of their configuration and then call that service or URL whenever a matching operation occurs.
